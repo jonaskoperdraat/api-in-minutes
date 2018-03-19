@@ -1,0 +1,39 @@
+@prefix elmo: <http://dotwebstack.org/def/elmo#> .
+@prefix elmo-resulttype: <http://dotwebstack.org/def/elmo/result-type/> .
+@prefix jk: <http://jonaskoperdraat.nl/def/api#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema@> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+GRAPH jk:config {
+
+  jk:backend a elmo:SparqlBackend ;
+    rdfs:subClassOf elmo:Backend ;
+    elmo:endpoint "https://data.pdok.nl/sparql"^^xsd:anyURI ;
+  .
+
+  jk:pandenv3 a elmo:InformationProduct ;
+    elmo:backend jk:backend ;
+    elmo:resultType elmo-resulttype:Graph ;
+    elmo:query '''
+      PREFIX bag: <http://bag.basisregistraties.overheid.nl/def/bag#>
+      PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+      CONSTRUCT {
+        ?s ?p ?o .
+        ?status ?p2 ?o2 .
+      }
+      WHERE {
+        {
+          SELECT ?s WHERE {
+            ?s a bag:Pand
+          }
+          LIMIT 10
+        }
+        ?s ?p ?o ;
+          bag:status ?status .
+        ?status ?p2 ?o2
+      }
+    '''
+  .
+
+}

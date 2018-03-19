@@ -1,0 +1,116 @@
+swagger: "2.0"
+host: localhost
+basePath: /bag/api/v5
+schemes:
+- http
+consumes:
+- application/json
+produces:
+- application/hal+json
+- application/problem+json
+x-dotwebstack-ldpath-namespaces:
+  bag: http://bag.basisregistraties.overheid.nl/def/bag#
+  skos: http://www.w3.org/2004/02/skos/core#
+parameters:
+  id:
+    name: id
+    in: path
+    description: Identifier
+    required: true
+    type: string
+    x-dotwebstack-parameter: http://jonaskoperdraat.nl/def/api#idParameter
+paths:
+  /panden:
+    get:
+      x-dotwebstack-information-product: http://jonaskoperdraat.nl/def/api#pandenv4
+      summary: Zoeken op één of meer instanties van een pand
+      responses:
+        '200':
+          description: OK
+          schema:
+            type: object
+            properties:
+              panden:
+                type: array
+                x-dotwebstack-subject-query: >-
+                  SELECT ?s WHERE {
+                    ?s a <http://bag.basisregistraties.overheid.nl/def/bag#Pand>
+                  }
+                items:
+                  $ref: '#/definitions/pand'
+  /panden/{id}:
+    get:
+      x-dotwebstack-information-product: http://jonaskoperdraat.nl/def/api#pandenv4
+      x-dotwebstack-result-found-query: >-
+              ASK { ?s a <http://bag.basisregistraties.overheid.nl/def/bag#Pand> }
+      summary: Een enkele instantie van een pand opvragen
+      parameters:
+        - $ref: '#/parameters/id'
+      responses:
+        '200':
+          description: OK
+          x-dotwebstack-subject-query: >-
+            SELECT ?s WHERE {
+              ?s a <http://bag.basisregistraties.overheid.nl/def/bag#Pand>
+            }
+          schema:
+            type: object
+            $ref: '#/definitions/pand'
+        404:
+          description: Status 404
+          schema:
+            $ref: '#/definitions/error'
+
+definitions:
+  pand:
+    type: object
+    description: >
+      Een pand is een gebouw waar je in kunt en dat je af kan sluiten. Het
+      gebouw staat altijd op de grond.
+    properties:
+      identificatiecode:
+        description: >
+          Een identificatiecode van een pand is een authentiek gegeven en een
+           unieke aanduiding van het pand.
+        example: 0003100000118018
+        type: string
+        x-dotwebstack-ldpath: bag:identificatiecode
+      oorspronkelijkBouwjaar:
+        type: integer
+        description: >
+          Een bouwjaar is een authentiek gegeven met betrekking tot het jaar
+          dat een pand bouwkundig gereed is of wordt opgeleverd.
+        example: 1965
+        x-dotwebstack-ldpath: bag:oorspronkelijkBouwjaar
+      status:
+        type: string
+        description: >
+         Een codering van de verschillende waarden die de status van een pand
+          kan aannemen.
+        example: PandInGebruik
+        x-dotwebstack-ldpath: bag:status / skos:prefLabel
+
+  error:
+    type: object
+    properties:
+      type:
+        type: string
+        description: >-
+          URI naar een pagina met meer informatie over deze
+          foutmelding voor de ontwikkelaar.
+        default: about:blank
+        x-dotwebstack-constant-value: dummy value
+      title:
+        type: string
+        x-dotwebstack-constant-value: dummy value
+      status:
+        type: integer
+        example: 404
+        x-dotwebstack-constant-value: dummy value
+      detail:
+        type: string
+        x-dotwebstack-constant-value: dummy value
+      instance:
+        type: string
+        x-dotwebstack-constant-value: dummy value
+

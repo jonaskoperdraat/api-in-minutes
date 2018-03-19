@@ -1,0 +1,59 @@
+swagger: "2.0"
+host: localhost
+basePath: /bag/api/v2
+schemes:
+- http
+consumes:
+- application/json
+produces:
+- application/hal+json
+- application/problem+json
+x-dotwebstack-ldpath-namespaces:
+  bag: http://bag.basisregistraties.overheid.nl/def/bag#
+paths:
+  /panden:
+    get:
+      x-dotwebstack-information-product: http://jonaskoperdraat.nl/def/api#panden
+      summary: Zoeken op één of meer instanties van een pand
+      responses:
+        '200':
+          description: OK
+          schema:
+            type: object
+            properties:
+              panden:
+                type: array
+                x-dotwebstack-subject-query: >-
+                  SELECT ?s WHERE {
+                    ?s a <http://bag.basisregistraties.overheid.nl/def/bag#Pand>
+                  }
+                items:
+                  $ref: '#/definitions/pand'
+definitions:
+  pand:
+    type: object
+    description: >
+      Een pand is een gebouw waar je in kunt en dat je af kan sluiten. Het
+      gebouw staat altijd op de grond.
+    properties:
+      identificatiecode:
+        description: >
+          Een identificatiecode van een pand is een authentiek gegeven en een
+           unieke aanduiding van het pand.
+        example: 0003100000118018
+        type: string
+        x-dotwebstack-ldpath: bag:identificatiecode
+      oorspronkelijkBouwjaar:
+        type: integer
+        description: >
+          Een bouwjaar is een authentiek gegeven met betrekking tot het jaar
+          dat een pand bouwkundig gereed is of wordt opgeleverd.
+        example: 1965
+        x-dotwebstack-ldpath: bag:oorspronkelijkBouwjaar
+      status:
+        type: string
+        description: >
+         Een codering van de verschillende waarden die de status van een pand
+          kan aannemen.
+        example: PandInGebruik
+        x-dotwebstack-ldpath: bag:status

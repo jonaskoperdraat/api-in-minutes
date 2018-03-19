@@ -1,0 +1,9 @@
+dotwebstack:
+  config:
+    resourcePath: classpath:/config
+    systemGraph: http://jonaskoperdraat.nl/def/api#config
+
+
+logging.level:
+  ROOT: INFO
+  org.dotwebstack.framework: DEBUG
